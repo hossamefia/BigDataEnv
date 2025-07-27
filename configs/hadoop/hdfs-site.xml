@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<configuration>
+  <!-- HDFS NameNode configuration -->
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>/opt/hadoop/data/namenode</value>
+    <description>NameNode data directory</description>
+  </property>
+
+  <!-- HDFS DataNode configuration -->
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>/opt/hadoop/data/datanode</value>
+    <description>DataNode data directory</description>
+  </property>
+
+  <!-- Replication factor -->
+  <property>
+    <name>dfs.replication</name>
+    <value>1</value>
+    <description>Default block replication</description>
+  </property>
+
+  <!-- NameNode HTTP address -->
+  <property>
+    <name>dfs.namenode.http-address</name>
+    <value>namenode:9870</value>
+    <description>NameNode web interface address</description>
+  </property>
+
+  <!-- DataNode HTTP address -->
+  <property>
+    <name>dfs.datanode.http.address</name>
+    <value>0.0.0.0:9864</value>
+    <description>DataNode web interface address</description>
+  </property>
+
+  <!-- Permissions -->
+  <property>
+    <name>dfs.permissions.enabled</name>
+    <value>false</value>
+    <description>Enable HDFS permissions</description>
+  </property>
+</configuration>

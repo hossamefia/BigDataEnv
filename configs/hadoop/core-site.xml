@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<configuration>
+  <!-- HDFS NameNode configuration -->
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://namenode:9000</value>
+    <description>The default file system URI</description>
+  </property>
+
+  <!-- HDFS temporary directory -->
+  <property>
+    <name>hadoop.tmp.dir</name>
+    <value>/opt/hadoop/logs</value>
+    <description>Temporary directory for Hadoop</description>
+  </property>
+
+  <!-- User configuration -->
+  <property>
+    <name>hadoop.http.staticuser.user</name>
+    <value>root</value>
+    <description>Default user for web interfaces</description>
+  </property>
+</configuration>

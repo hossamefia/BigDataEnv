@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<configuration>
+  <!-- Define root queue and its children -->
+  <property>
+    <name>yarn.scheduler.capacity.root.queues</name>
+    <value>default</value>
+    <description>Child queues of root</description>
+  </property>
+  
+  <!-- Default queue capacity -->
+  <property>
+    <name>yarn.scheduler.capacity.root.default.capacity</name>
+    <value>100</value>
+    <description>Default queue capacity as percentage of root</description>
+  </property>
+  
+  <!-- Default queue maximum capacity -->
+  <property>
+    <name>yarn.scheduler.capacity.root.default.maximum-capacity</name>
+    <value>100</value>
+    <description>Maximum capacity for default queue</description>
+  </property>
+  
+  <!-- Default queue state -->
+  <property>
+    <name>yarn.scheduler.capacity.root.default.state</name>
+    <value>RUNNING</value>
+    <description>State of default queue</description>
+  </property>
+  
+  <!-- User limit factor -->
+  <property>
+    <name>yarn.scheduler.capacity.root.default.user-limit-factor</name>
+    <value>1</value>
+    <description>User limit factor for default queue</description>
+  </property>
+  
+  <!-- Minimum user limit percent -->
+  <property>
+    <name>yarn.scheduler.capacity.root.default.minimum-user-limit-percent</name>
+    <value>100</value>
+    <description>Minimum user limit percent for default queue</description>
+  </property>
+  
+  <!-- Enable size-based weight -->
+  <property>
+    <name>yarn.scheduler.capacity.resource-calculator</name>
+    <value>org.apache.hadoop.yarn.util.resource.DefaultResourceCalculator</value>
+    <description>Resource calculator class</description>
+  </property>
+</configuration>
