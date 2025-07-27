@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!-- HDFS Replication -->
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+        <description>Default block replication</description>
+    </property>
+    
+    <!-- NameNode directories -->
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>/hadoop/dfs/name</value>
+        <description>Path on the local filesystem where the NameNode stores the namespace and transaction logs persistently</description>
+    </property>
+    
+    <!-- DataNode directories -->
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>/hadoop/dfs/data</value>
+        <description>Comma separated list of paths on the local filesystem of a DataNode where it should store its blocks</description>
+    </property>
+    
+    <!-- Block size -->
+    <property>
+        <name>dfs.blocksize</name>
+        <value>268435456</value>
+        <description>Default block size (256MB)</description>
+    </property>
+    
+    <!-- NameNode HTTP address -->
+    <property>
+        <name>dfs.namenode.http-address</name>
+        <value>0.0.0.0:9870</value>
+    </property>
+    
+    <!-- DataNode HTTP address -->
+    <property>
+        <name>dfs.datanode.http.address</name>
+        <value>0.0.0.0:9864</value>
+    </property>
+    
+    <!-- Enable WebHDFS -->
+    <property>
+        <name>dfs.webhdfs.enabled</name>
+        <value>true</value>
+    </property>
+    
+    <!-- Permissions -->
+    <property>
+        <name>dfs.permissions.enabled</name>
+        <value>false</value>
+        <description>Enable permission checking in HDFS</description>
+    </property>
+    
+    <!-- Support append -->
+    <property>
+        <name>dfs.support.append</name>
+        <value>true</value>
+    </property>
+    
+    <!-- Client read shortcircuit -->
+    <property>
+        <name>dfs.client.read.shortcircuit</name>
+        <value>true</value>
+    </property>
+    
+    <!-- Domain socket path -->
+    <property>
+        <name>dfs.domain.socket.path</name>
+        <value>/var/lib/hadoop-hdfs/dn_socket</value>
+    </property>
+</configuration>

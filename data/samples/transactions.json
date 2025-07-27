@@ -1,0 +1,102 @@
+[
+  {
+    "transaction_id": "TXN001",
+    "user_id": 1,
+    "amount": 150.50,
+    "currency": "USD",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "merchant": "Amazon",
+    "category": "Electronics",
+    "status": "completed"
+  },
+  {
+    "transaction_id": "TXN002",
+    "user_id": 2,
+    "amount": 89.99,
+    "currency": "GBP",
+    "timestamp": "2024-01-15T11:45:00Z",
+    "merchant": "Tesco",
+    "category": "Groceries",
+    "status": "completed"
+  },
+  {
+    "transaction_id": "TXN003",
+    "user_id": 3,
+    "amount": 299.00,
+    "currency": "CAD",
+    "timestamp": "2024-01-15T14:20:00Z",
+    "merchant": "Best Buy",
+    "category": "Electronics",
+    "status": "pending"
+  },
+  {
+    "transaction_id": "TXN004",
+    "user_id": 1,
+    "amount": 45.75,
+    "currency": "USD",
+    "timestamp": "2024-01-16T09:15:00Z",
+    "merchant": "Starbucks",
+    "category": "Food & Drink",
+    "status": "completed"
+  },
+  {
+    "transaction_id": "TXN005",
+    "user_id": 4,
+    "amount": 120.00,
+    "currency": "AUD",
+    "timestamp": "2024-01-16T16:30:00Z",
+    "merchant": "Woolworths",
+    "category": "Groceries",
+    "status": "completed"
+  },
+  {
+    "transaction_id": "TXN006",
+    "user_id": 5,
+    "amount": 75.50,
+    "currency": "EUR",
+    "timestamp": "2024-01-17T12:00:00Z",
+    "merchant": "Media Markt",
+    "category": "Electronics",
+    "status": "failed"
+  },
+  {
+    "transaction_id": "TXN007",
+    "user_id": 2,
+    "amount": 200.00,
+    "currency": "GBP",
+    "timestamp": "2024-01-17T18:45:00Z",
+    "merchant": "ASOS",
+    "category": "Clothing",
+    "status": "completed"
+  },
+  {
+    "transaction_id": "TXN008",
+    "user_id": 6,
+    "amount": 55.25,
+    "currency": "EUR",
+    "timestamp": "2024-01-18T08:30:00Z",
+    "merchant": "Carrefour",
+    "category": "Groceries",
+    "status": "completed"
+  },
+  {
+    "transaction_id": "TXN009",
+    "user_id": 7,
+    "amount": 180.00,
+    "currency": "JPY",
+    "timestamp": "2024-01-18T13:15:00Z",
+    "merchant": "Yodobashi",
+    "category": "Electronics",
+    "status": "completed"
+  },
+  {
+    "transaction_id": "TXN010",
+    "user_id": 3,
+    "amount": 95.80,
+    "currency": "CAD",
+    "timestamp": "2024-01-19T10:45:00Z",
+    "merchant": "Tim Hortons",
+    "category": "Food & Drink",
+    "status": "completed"
+  }
+]

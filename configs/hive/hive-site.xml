@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!-- Hive Metastore Database Configuration -->
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:postgresql://postgres:5432/metastore</value>
+        <description>JDBC connection URL for PostgreSQL metastore</description>
+    </property>
+    
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>org.postgresql.Driver</value>
+        <description>PostgreSQL JDBC driver class</description>
+    </property>
+    
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>hive</value>
+        <description>Username for metastore database</description>
+    </property>
+    
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>hive123</value>
+        <description>Password for metastore database</description>
+    </property>
+    
+    <!-- Metastore Service Configuration -->
+    <property>
+        <name>hive.metastore.uris</name>
+        <value>thrift://hive-metastore:9083</value>
+        <description>Thrift URI for the remote metastore</description>
+    </property>
+    
+    <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>/user/hive/warehouse</value>
+        <description>Location of default database for the warehouse</description>
+    </property>
+    
+    <!-- HiveServer2 Configuration -->
+    <property>
+        <name>hive.server2.thrift.port</name>
+        <value>10000</value>
+        <description>Port number of HiveServer2 Thrift interface</description>
+    </property>
+    
+    <property>
+        <name>hive.server2.thrift.bind.host</name>
+        <value>0.0.0.0</value>
+        <description>Bind host for HiveServer2</description>
+    </property>
+    
+    <property>
+        <name>hive.server2.webui.host</name>
+        <value>0.0.0.0</value>
+        <description>Host for HiveServer2 web UI</description>
+    </property>
+    
+    <property>
+        <name>hive.server2.webui.port</name>
+        <value>10002</value>
+        <description>Port for HiveServer2 web UI</description>
+    </property>
+    
+    <!-- Hadoop Integration -->
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://namenode:9000</value>
+        <description>Default file system</description>
+    </property>
+    
+    <!-- Spark Integration -->
+    <property>
+        <name>hive.execution.engine</name>
+        <value>spark</value>
+        <description>Execution engine for Hive queries (spark, mr, tez)</description>
+    </property>
+    
+    <property>
+        <name>spark.master</name>
+        <value>spark://spark-master:7077</value>
+        <description>Spark master URL</description>
+    </property>
+    
+    <property>
+        <name>spark.eventLog.enabled</name>
+        <value>true</value>
+    </property>
+    
+    <property>
+        <name>spark.eventLog.dir</name>
+        <value>hdfs://namenode:9000/spark-history</value>
+    </property>
+    
+    <property>
+        <name>spark.serializer</name>
+        <value>org.apache.spark.serializer.KryoSerializer</value>
+    </property>
+    
+    <!-- Security and Authentication -->
+    <property>
+        <name>hive.metastore.sasl.enabled</name>
+        <value>false</value>
+        <description>If true, the metastore Thrift interface will be secured with SASL</description>
+    </property>
+    
+    <property>
+        <name>hive.server2.authentication</name>
+        <value>NONE</value>
+        <description>Authentication mode for HiveServer2</description>
+    </property>
+    
+    <!-- Performance and Optimization -->
+    <property>
+        <name>hive.exec.dynamic.partition</name>
+        <value>true</value>
+        <description>Enable dynamic partitioning</description>
+    </property>
+    
+    <property>
+        <name>hive.exec.dynamic.partition.mode</name>
+        <value>nonstrict</value>
+        <description>Dynamic partition mode</description>
+    </property>
+    
+    <property>
+        <name>hive.exec.max.dynamic.partitions</name>
+        <value>1000</value>
+        <description>Maximum number of dynamic partitions</description>
+    </property>
+    
+    <property>
+        <name>hive.exec.max.dynamic.partitions.pernode</name>
+        <value>100</value>
+        <description>Maximum number of dynamic partitions per node</description>
+    </property>
+    
+    <!-- Enable statistics -->
+    <property>
+        <name>hive.stats.autogather</name>
+        <value>true</value>
+        <description>Automatically gather statistics</description>
+    </property>
+    
+    <!-- Schema validation -->
+    <property>
+        <name>hive.metastore.schema.verification</name>
+        <value>false</value>
+        <description>Enforce schema validation</description>
+    </property>
+    
+    <property>
+        <name>datanucleus.schema.autoCreateAll</name>
+        <value>true</value>
+        <description>Auto create database schema</description>
+    </property>
+    
+    <property>
+        <name>datanucleus.fixedDatastore</name>
+        <value>false</value>
+    </property>
+    
+    <!-- Connection pool settings -->
+    <property>
+        <name>datanucleus.connectionPool.maxPoolSize</name>
+        <value>10</value>
+        <description>Maximum number of connections in the pool</description>
+    </property>
+    
+    <property>
+        <name>datanucleus.connectionPool.minPoolSize</name>
+        <value>3</value>
+        <description>Minimum number of connections in the pool</description>
+    </property>
+</configuration>
