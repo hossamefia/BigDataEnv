@@ -1,0 +1,365 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Hive Metastore
+  postgres:
+    image: postgres:13-alpine
+    container_name: bigdata-postgres
+    environment:
+      POSTGRES_DB: metastore
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: hive123
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./configs/hive/init-hive-db.sql:/docker-entrypoint-initdb.d/init-hive-db.sql
+    networks:
+      - bigdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hive -d metastore"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Hadoop NameNode
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: bigdata-namenode
+    restart: unless-stopped
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+      - ./configs/hadoop:/opt/hadoop-3.2.1/etc/hadoop
+    environment:
+      - CLUSTER_NAME=bigdata
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - CORE_CONF_hadoop_http_staticuser_user=root
+      - CORE_CONF_hadoop_proxyuser_hue_hosts=*
+      - CORE_CONF_hadoop_proxyuser_hue_groups=*
+      - CORE_CONF_io_compression_codecs=org.apache.hadoop.io.compress.SnappyCodec
+      - HDFS_CONF_dfs_webhdfs_enabled=true
+      - HDFS_CONF_dfs_permissions_enabled=false
+      - HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false
+    networks:
+      - bigdata
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9870/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Hadoop DataNode
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: bigdata-datanode
+    restart: unless-stopped
+    ports:
+      - "9864:9864"
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+      - ./configs/hadoop:/opt/hadoop-3.2.1/etc/hadoop
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+      CORE_CONF_fs_defaultFS: hdfs://namenode:9000
+      CORE_CONF_hadoop_http_staticuser_user: root
+      CORE_CONF_hadoop_proxyuser_hue_hosts: "*"
+      CORE_CONF_hadoop_proxyuser_hue_groups: "*"
+      CORE_CONF_io_compression_codecs: org.apache.hadoop.io.compress.SnappyCodec
+      HDFS_CONF_dfs_webhdfs_enabled: "true"
+      HDFS_CONF_dfs_permissions_enabled: "false"
+      HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check: "false"
+    networks:
+      - bigdata
+    depends_on:
+      namenode:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9864/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # YARN ResourceManager
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    container_name: bigdata-resourcemanager
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864"
+      CORE_CONF_fs_defaultFS: hdfs://namenode:9000
+      CORE_CONF_hadoop_http_staticuser_user: root
+      CORE_CONF_hadoop_proxyuser_hue_hosts: "*"
+      CORE_CONF_hadoop_proxyuser_hue_groups: "*"
+      CORE_CONF_io_compression_codecs: org.apache.hadoop.io.compress.SnappyCodec
+      HDFS_CONF_dfs_webhdfs_enabled: "true"
+      HDFS_CONF_dfs_permissions_enabled: "false"
+      YARN_CONF_yarn_log___aggregation___enable: "true"
+      YARN_CONF_yarn_log_server_url: http://historyserver:8188/applicationhistory/logs/
+      YARN_CONF_yarn_resourcemanager_recovery_enabled: "true"
+      YARN_CONF_yarn_resourcemanager_store_class: org.apache.hadoop.yarn.server.resourcemanager.recovery.FileSystemRMStateStore
+      YARN_CONF_yarn_resourcemanager_scheduler_class: org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler
+      YARN_CONF_yarn_scheduler_capacity_root_default_maximum___allocation___mb: "8192"
+      YARN_CONF_yarn_scheduler_capacity_root_default_maximum___allocation___vcores: "4"
+      YARN_CONF_yarn_resourcemanager_fs_state___store_uri: /rmstate
+      YARN_CONF_yarn_resourcemanager_system___metrics___publisher_enabled: "true"
+      YARN_CONF_yarn_resourcemanager_hostname: resourcemanager
+      YARN_CONF_yarn_resourcemanager_address: resourcemanager:8032
+      YARN_CONF_yarn_resourcemanager_scheduler_address: resourcemanager:8030
+      YARN_CONF_yarn_resourcemanager_resource__tracker_address: resourcemanager:8031
+    volumes:
+      - ./configs/hadoop:/opt/hadoop-3.2.1/etc/hadoop
+    networks:
+      - bigdata
+    depends_on:
+      namenode:
+        condition: service_healthy
+      datanode:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8088/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # YARN NodeManager
+  nodemanager:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    container_name: bigdata-nodemanager
+    restart: unless-stopped
+    ports:
+      - "8042:8042"
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864 resourcemanager:8088"
+      CORE_CONF_fs_defaultFS: hdfs://namenode:9000
+      CORE_CONF_hadoop_http_staticuser_user: root
+      CORE_CONF_hadoop_proxyuser_hue_hosts: "*"
+      CORE_CONF_hadoop_proxyuser_hue_groups: "*"
+      CORE_CONF_io_compression_codecs: org.apache.hadoop.io.compress.SnappyCodec
+      HDFS_CONF_dfs_webhdfs_enabled: "true"
+      HDFS_CONF_dfs_permissions_enabled: "false"
+      YARN_CONF_yarn_log___aggregation___enable: "true"
+      YARN_CONF_yarn_log_server_url: http://historyserver:8188/applicationhistory/logs/
+      YARN_CONF_yarn_resourcemanager_recovery_enabled: "true"
+      YARN_CONF_yarn_resourcemanager_store_class: org.apache.hadoop.yarn.server.resourcemanager.recovery.FileSystemRMStateStore
+      YARN_CONF_yarn_resourcemanager_scheduler_class: org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler
+      YARN_CONF_yarn_scheduler_capacity_root_default_maximum___allocation___mb: "8192"
+      YARN_CONF_yarn_scheduler_capacity_root_default_maximum___allocation___vcores: "4"
+      YARN_CONF_yarn_resourcemanager_fs_state___store_uri: /rmstate
+      YARN_CONF_yarn_resourcemanager_system___metrics___publisher_enabled: "true"
+      YARN_CONF_yarn_resourcemanager_hostname: resourcemanager
+      YARN_CONF_yarn_resourcemanager_address: resourcemanager:8032
+      YARN_CONF_yarn_resourcemanager_scheduler_address: resourcemanager:8030
+      YARN_CONF_yarn_resourcemanager_resource__tracker_address: resourcemanager:8031
+      YARN_CONF_yarn_nodemanager_remote___app___log___dir: /app-logs
+      YARN_CONF_yarn_nodemanager_aux___services: mapreduce_shuffle
+      YARN_CONF_yarn_nodemanager_aux___services_mapreduce___shuffle_class: org.apache.hadoop.mapred.ShuffleHandler
+      YARN_CONF_yarn_nodemanager_resource_memory___mb: 4096
+      YARN_CONF_yarn_nodemanager_resource_cpu___vcores: 4
+      YARN_CONF_yarn_nodemanager_disk___health___checker_max___disk___utilization___per___disk___percentage: 98.5
+      YARN_CONF_yarn_nodemanager_remote___app___log___dir___suffix: logs
+      YARN_CONF_yarn_nodemanager_log___dirs: /var/log/hadoop-yarn/containers
+      YARN_CONF_yarn_nodemanager_local___dirs: /var/lib/hadoop-yarn/cache/yarn/nm-local-dir
+    volumes:
+      - ./configs/hadoop:/opt/hadoop-3.2.1/etc/hadoop
+    networks:
+      - bigdata
+    depends_on:
+      resourcemanager:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8042/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Hive Metastore Service
+  hive-metastore:
+    image: bde2020/hive:2.3.2-postgresql-metastore
+    container_name: bigdata-hive-metastore
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      namenode:
+        condition: service_healthy
+      datanode:
+        condition: service_healthy
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870 datanode:9864 postgres:5432"
+      SERVICE_NAME: "metastore"
+      DB_DRIVER: postgres
+      IS_RESUME: "true"
+      HIVE_CUSTOM_CONF_DIR: "/hive_custom_conf"
+    ports:
+      - "9083:9083"
+    volumes:
+      - ./configs/hive:/hive_custom_conf
+    networks:
+      - bigdata
+    healthcheck:
+      test: ["CMD-SHELL", "netstat -ltn | grep -c 9083"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # HiveServer2
+  hiveserver2:
+    image: bde2020/hive:2.3.2-postgresql-metastore
+    container_name: bigdata-hiveserver2
+    restart: unless-stopped
+    depends_on:
+      hive-metastore:
+        condition: service_healthy
+    environment:
+      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://postgres/metastore"
+      HIVE_CORE_CONF_javax_jdo_option_ConnectionDriverName: "org.postgresql.Driver"
+      HIVE_CORE_CONF_javax_jdo_option_ConnectionUserName: "hive"
+      HIVE_CORE_CONF_javax_jdo_option_ConnectionPassword: "hive123"
+      HIVE_CORE_CONF_datanucleus_autoCreateSchema: "false"
+      HIVE_SITE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://postgres/metastore"
+      HIVE_SITE_CONF_javax_jdo_option_ConnectionDriverName: "org.postgresql.Driver"
+      HIVE_SITE_CONF_javax_jdo_option_ConnectionUserName: "hive"
+      HIVE_SITE_CONF_javax_jdo_option_ConnectionPassword: "hive123"
+      HIVE_SITE_CONF_datanucleus_autoCreateSchema: "false"
+      HIVE_SITE_CONF_hive_metastore_uris: "thrift://hive-metastore:9083"
+      CORE_CONF_fs_defaultFS: "hdfs://namenode:9000"
+      HDFS_CONF_dfs_webhdfs_enabled: "true"
+      HDFS_CONF_dfs_permissions_enabled: "false"
+      SERVICE_PRECONDITION: "hive-metastore:9083"
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+    volumes:
+      - ./configs/hive:/hive_custom_conf
+    networks:
+      - bigdata
+    healthcheck:
+      test: ["CMD-SHELL", "netstat -ltn | grep -c 10000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Spark Master
+  spark-master:
+    image: bitnami/spark:3.4.1
+    container_name: bigdata-spark-master
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_MASTER_OPTS="-Dspark.deploy.recoveryMode=ZOOKEEPER -Dspark.deploy.zookeeper.url= -Dspark.deploy.zookeeper.dir=/spark-recovery"
+    volumes:
+      - ./configs/spark:/opt/bitnami/spark/conf
+      - spark_master_data:/opt/bitnami/spark/work
+    networks:
+      - bigdata
+    depends_on:
+      namenode:
+        condition: service_healthy
+      datanode:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Spark Worker
+  spark-worker:
+    image: bitnami/spark:3.4.1
+    container_name: bigdata-spark-worker
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=2
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    volumes:
+      - ./configs/spark:/opt/bitnami/spark/conf
+      - spark_worker_data:/opt/bitnami/spark/work
+    networks:
+      - bigdata
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Jupyter Lab with PySpark
+  jupyter:
+    image: jupyter/pyspark-notebook:latest
+    container_name: bigdata-jupyter
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=bigdata123
+      - SPARK_MASTER=spark://spark-master:7077
+      - HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop
+      - YARN_CONF_DIR=/usr/local/hadoop/etc/hadoop
+      - SPARK_HOME=/usr/local/spark
+      - PYTHONPATH=/usr/local/spark/python:/usr/local/spark/python/lib/py4j-0.10.9-src.zip
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./configs/jupyter:/home/jovyan/.jupyter
+      - ./configs/hadoop:/usr/local/hadoop/etc/hadoop
+      - ./configs/spark:/usr/local/spark/conf
+      - ./data:/home/jovyan/data
+    networks:
+      - bigdata
+    depends_on:
+      spark-master:
+        condition: service_healthy
+      hiveserver2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8888/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    user: root
+    command: >
+      bash -c "
+        pip install --quiet hdfs3 pyhive[hive] sqlalchemy &&
+        start-notebook.sh --NotebookApp.token='bigdata123' --NotebookApp.password='' --NotebookApp.allow_root=True
+      "
+
+volumes:
+  postgres_data:
+    driver: local
+  hadoop_namenode:
+    driver: local
+  hadoop_datanode:
+    driver: local
+  spark_master_data:
+    driver: local
+  spark_worker_data:
+    driver: local
+
+networks:
+  bigdata:
+    driver: bridge
+    name: bigdata-network
