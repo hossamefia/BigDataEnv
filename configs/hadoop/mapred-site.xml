@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!-- MapReduce framework -->
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+        <description>The runtime framework for executing MapReduce jobs</description>
+    </property>
+    
+    <!-- JobHistory Server -->
+    <property>
+        <name>mapreduce.jobhistory.address</name>
+        <value>resourcemanager:10020</value>
+    </property>
+    
+    <property>
+        <name>mapreduce.jobhistory.webapp.address</name>
+        <value>resourcemanager:19888</value>
+    </property>
+    
+    <!-- Map and Reduce task memory -->
+    <property>
+        <name>mapreduce.map.memory.mb</name>
+        <value>512</value>
+    </property>
+    
+    <property>
+        <name>mapreduce.reduce.memory.mb</name>
+        <value>1024</value>
+    </property>
+    
+    <property>
+        <name>mapreduce.map.java.opts</name>
+        <value>-Xmx410m</value>
+    </property>
+    
+    <property>
+        <name>mapreduce.reduce.java.opts</name>
+        <value>-Xmx820m</value>
+    </property>
+    
+    <!-- Application Master memory -->
+    <property>
+        <name>yarn.app.mapreduce.am.resource.mb</name>
+        <value>512</value>
+    </property>
+    
+    <property>
+        <name>yarn.app.mapreduce.am.command-opts</name>
+        <value>-Xmx410m</value>
+    </property>
+    
+    <!-- Shuffle and sort -->
+    <property>
+        <name>mapreduce.task.io.sort.mb</name>
+        <value>256</value>
+    </property>
+    
+    <property>
+        <name>mapreduce.task.io.sort.factor</name>
+        <value>10</value>
+    </property>
+    
+    <!-- Output compression -->
+    <property>
+        <name>mapreduce.output.fileoutputformat.compress</name>
+        <value>false</value>
+    </property>
+    
+    <property>
+        <name>mapreduce.map.output.compress</name>
+        <value>true</value>
+    </property>
+    
+    <property>
+        <name>mapreduce.map.output.compress.codec</name>
+        <value>org.apache.hadoop.io.compress.SnappyCodec</value>
+    </property>
+    
+    <!-- Job execution -->
+    <property>
+        <name>mapreduce.job.ubertask.enable</name>
+        <value>true</value>
+    </property>
+    
+    <property>
+        <name>mapreduce.job.ubertask.maxmaps</name>
+        <value>9</value>
+    </property>
+    
+    <property>
+        <name>mapreduce.job.ubertask.maxreduces</name>
+        <value>1</value>
+    </property>
+</configuration>

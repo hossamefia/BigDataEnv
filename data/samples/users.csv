@@ -1,0 +1,21 @@
+user_id,name,email,age,city,country
+1,John Smith,john.smith@email.com,28,New York,USA
+2,Emma Johnson,emma.j@email.com,34,London,UK
+3,Michael Chen,m.chen@email.com,22,Toronto,Canada
+4,Sarah Williams,sarah.w@email.com,31,Sydney,Australia
+5,David Brown,david.brown@email.com,45,Berlin,Germany
+6,Lisa Davis,lisa.davis@email.com,29,Paris,France
+7,James Wilson,james.w@email.com,37,Tokyo,Japan
+8,Maria Garcia,maria.garcia@email.com,26,Madrid,Spain
+9,Robert Taylor,robert.t@email.com,42,Rome,Italy
+10,Jennifer Lee,jennifer.lee@email.com,33,Seoul,South Korea
+11,Christopher Moore,chris.moore@email.com,39,Amsterdam,Netherlands
+12,Amanda White,amanda.white@email.com,24,Stockholm,Sweden
+13,Daniel Martin,daniel.martin@email.com,35,Copenhagen,Denmark
+14,Jessica Thompson,jessica.t@email.com,27,Oslo,Norway
+15,Matthew Jackson,matthew.j@email.com,30,Helsinki,Finland
+16,Ashley Harris,ashley.harris@email.com,25,Zurich,Switzerland
+17,Joshua Clark,joshua.clark@email.com,41,Vienna,Austria
+18,Emily Lewis,emily.lewis@email.com,23,Brussels,Belgium
+19,Ryan Walker,ryan.walker@email.com,36,Dublin,Ireland
+20,Nicole Hall,nicole.hall@email.com,32,Edinburgh,Scotland
