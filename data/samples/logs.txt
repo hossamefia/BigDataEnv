@@ -1,0 +1,20 @@
+2023-01-15 10:30:25 INFO  [main] Application started successfully
+2023-01-15 10:30:26 DEBUG [worker-1] Processing user request: user_id=U001
+2023-01-15 10:30:27 INFO  [worker-1] Transaction processed: TXN001, amount=250.75
+2023-01-15 10:31:15 WARN  [monitor] High memory usage detected: 85%
+2023-01-15 10:32:45 DEBUG [worker-2] Processing user request: user_id=U002
+2023-01-15 10:32:46 INFO  [worker-2] Transaction processed: TXN002, amount=89.99
+2023-01-15 10:35:20 ERROR [worker-3] Failed to process transaction: TXN003_RETRY
+2023-01-15 10:35:21 INFO  [worker-3] Retrying transaction: TXN003
+2023-01-15 10:35:22 INFO  [worker-3] Transaction processed: TXN003, amount=1200.00
+2023-01-15 10:40:15 INFO  [scheduler] Daily backup completed successfully
+2023-01-15 10:45:30 DEBUG [worker-1] Processing user request: user_id=U001
+2023-01-15 10:45:31 INFO  [worker-1] Transaction processed: TXN004, amount=45.50
+2023-01-15 10:50:25 WARN  [security] Multiple failed login attempts from IP: 192.168.1.100
+2023-01-15 11:00:15 INFO  [main] System health check: All services running normally
+2023-01-15 11:15:45 DEBUG [worker-2] Processing user request: user_id=U004
+2023-01-15 11:15:46 INFO  [worker-2] Transaction processed: TXN005, amount=320.25
+2023-01-15 11:30:20 ERROR [database] Connection timeout to primary database
+2023-01-15 11:30:21 INFO  [database] Failover to secondary database successful
+2023-01-15 11:45:10 INFO  [worker-1] Transaction processed: TXN006, amount=78.99
+2023-01-15 12:00:00 INFO  [scheduler] Hourly metrics aggregation completed
