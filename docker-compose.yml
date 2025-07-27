@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    restart: unless-stopped
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+      - ./configs/hadoop/core-site.xml:/opt/hadoop-3.2.1/etc/hadoop/core-site.xml:ro
+      - ./configs/hadoop/hdfs-site.xml:/opt/hadoop-3.2.1/etc/hadoop/hdfs-site.xml:ro
+    environment:
+      - CLUSTER_NAME=bigdata
+    networks:
+      - bigdata
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    restart: unless-stopped
+    ports:
+      - "9864:9864"
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+      - ./configs/hadoop/core-site.xml:/opt/hadoop-3.2.1/etc/hadoop/core-site.xml:ro
+      - ./configs/hadoop/hdfs-site.xml:/opt/hadoop-3.2.1/etc/hadoop/hdfs-site.xml:ro
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    networks:
+      - bigdata
+
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    container_name: resourcemanager
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./configs/hadoop/core-site.xml:/opt/hadoop-3.2.1/etc/hadoop/core-site.xml:ro
+      - ./configs/hadoop/hdfs-site.xml:/opt/hadoop-3.2.1/etc/hadoop/hdfs-site.xml:ro
+      - ./configs/hadoop/yarn-site.xml:/opt/hadoop-3.2.1/etc/hadoop/yarn-site.xml:ro
+      - ./configs/hadoop/capacity-scheduler.xml:/opt/hadoop-3.2.1/etc/hadoop/capacity-scheduler.xml:ro
+      - ./configs/hadoop/mapred-site.xml:/opt/hadoop-3.2.1/etc/hadoop/mapred-site.xml:ro
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000"
+      YARN_CONF_yarn_resourcemanager_hostname: resourcemanager
+      YARN_CONF_yarn_resourcemanager_bind___host: 0.0.0.0
+      YARN_CONF_yarn_timeline___service_hostname: resourcemanager
+      YARN_CONF_yarn_log___aggregation___enable: "true"
+      YARN_CONF_yarn_nodemanager_remote___app___log___dir: /app-logs
+    networks:
+      - bigdata
+
+  nodemanager:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    container_name: nodemanager
+    restart: unless-stopped
+    ports:
+      - "8042:8042"
+    volumes:
+      - ./configs/hadoop/core-site.xml:/opt/hadoop-3.2.1/etc/hadoop/core-site.xml:ro
+      - ./configs/hadoop/hdfs-site.xml:/opt/hadoop-3.2.1/etc/hadoop/hdfs-site.xml:ro
+      - ./configs/hadoop/yarn-site.xml:/opt/hadoop-3.2.1/etc/hadoop/yarn-site.xml:ro
+      - ./configs/hadoop/mapred-site.xml:/opt/hadoop-3.2.1/etc/hadoop/mapred-site.xml:ro
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000 resourcemanager:8088"
+    networks:
+      - bigdata
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:
+
+networks:
+  bigdata:
+    driver: bridge

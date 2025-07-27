@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<configuration>
+  <!-- MapReduce framework configuration -->
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+    <description>MapReduce framework name</description>
+  </property>
+
+  <!-- JobHistory server configuration -->
+  <property>
+    <name>mapreduce.jobhistory.address</name>
+    <value>historyserver:10020</value>
+    <description>JobHistory server address</description>
+  </property>
+
+  <property>
+    <name>mapreduce.jobhistory.webapp.address</name>
+    <value>historyserver:19888</value>
+    <description>JobHistory server web interface address</description>
+  </property>
+
+  <!-- MapReduce application classpath -->
+  <property>
+    <name>mapreduce.application.classpath</name>
+    <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
+    <description>MapReduce application classpath</description>
+  </property>
+</configuration>
